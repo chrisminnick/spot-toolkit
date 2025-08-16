@@ -28,6 +28,9 @@ export class ConfigManager {
       monitoring: {
         enabled: true,
       },
+      templates: {
+        directory: './prompts',
+      },
       providers: {},
     };
   }

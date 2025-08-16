@@ -7,6 +7,7 @@ import { readFile, writeFile } from 'fs/promises';
 import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { compilePrompt, loadStylePack } from './utils/prompting.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -46,7 +47,38 @@ export class ContentBuddy {
 
       // Load input data
       const inputPath = resolve(inputFile);
-      const inputData = JSON.parse(await readFile(inputPath, 'utf-8'));
+      let inputData;
+
+      try {
+        const rawData = await readFile(inputPath, 'utf-8');
+
+        // Try to parse as JSON first
+        if (inputFile.endsWith('.json')) {
+          inputData = JSON.parse(rawData);
+        } else {
+          // For non-JSON files, create a wrapper object with common mappings
+          const fileExt = inputFile.split('.').pop();
+          inputData = {
+            content: rawData,
+            file_type: fileExt,
+            file_name: inputPath.split('/').pop(),
+
+            // Common template input mappings
+            markdown: rawData, // for repurpose_pack
+            transcript_text: rawData, // for summarize_grounded
+            text: rawData, // general text input
+            mode: 'executive', // default mode for summarize templates
+            channel_constraints: JSON.stringify({
+              // default channel constraints
+              twitter: { max_length: 280, tone: 'engaging' },
+              linkedin: { max_length: 1300, tone: 'professional' },
+              email: { max_length: 2000, tone: 'friendly' },
+            }),
+          };
+        }
+      } catch (error) {
+        throw new Error(`Failed to load input file: ${error.message}`);
+      }
 
       // Validate input against template requirements
       await this.validateInput(inputData, templateConfig);
@@ -106,79 +138,53 @@ export class ContentBuddy {
    * Execute the generation workflow
    */
   async executeGeneration(inputData, templateConfig, provider) {
-    const workflow = templateConfig.workflow || ['draft', 'refine'];
-    let result = inputData;
+    // Load style pack
+    const stylePack = await loadStylePack();
 
-    for (const step of workflow) {
-      const stepConfig = templateConfig.steps?.[step];
-      if (!stepConfig) {
-        throw new Error(`Unknown workflow step: ${step}`);
+    // Compile the prompt using the existing prompting utilities
+    const compiledPrompt = compilePrompt(templateConfig, inputData, stylePack);
+
+    // Build the full prompt text for the provider
+    let promptText;
+    if (typeof compiledPrompt === 'string') {
+      promptText = compiledPrompt;
+    } else {
+      // Combine system and user prompts
+      promptText = `${compiledPrompt.system}\n\nUser: ${compiledPrompt.user}`;
+
+      // Add style pack information if available
+      if (compiledPrompt.stylePack && compiledPrompt.stylePack.brand_voice) {
+        promptText += `\n\nBrand voice: ${compiledPrompt.stylePack.brand_voice}`;
       }
-
-      result = await this.executeStep(result, stepConfig, provider);
+      if (compiledPrompt.stylePack && compiledPrompt.stylePack.reading_level) {
+        promptText += `\nTarget reading level: ${compiledPrompt.stylePack.reading_level}`;
+      }
     }
 
-    return result;
-  }
-
-  /**
-   * Execute a single workflow step
-   */
-  async executeStep(data, stepConfig, provider) {
-    const { prompt, maxTokens, temperature, ...options } = stepConfig;
-
-    // Build prompt from template and data
-    const fullPrompt = await this.buildPrompt(prompt, data);
-
-    // Generate content
-    const response = await provider.generate({
-      prompt: fullPrompt,
-      maxTokens: maxTokens || 2000,
-      temperature: temperature || 0.7,
-      ...options,
+    // Generate content using the provider
+    const response = await provider.generateText(promptText, {
+      maxTokens: 2000,
+      temperature: 0.7,
     });
 
+    // Return structured result
     return {
-      ...data,
-      [stepConfig.outputKey || 'content']: response.content,
+      content: response,
+      template: templateConfig.id,
+      version: templateConfig.version,
       metadata: {
-        ...data.metadata,
-        [stepConfig.name]: {
-          provider: provider.name,
-          tokens: response.usage,
-          timestamp: new Date().toISOString(),
-        },
+        provider: provider.constructor.name,
+        timestamp: new Date().toISOString(),
+        inputKeys: Object.keys(inputData),
       },
     };
-  }
-
-  /**
-   * Build prompt from template and data
-   */
-  async buildPrompt(promptTemplate, data) {
-    // Simple template replacement for now
-    let prompt = promptTemplate;
-
-    // Replace {{variable}} placeholders
-    const replacements = {
-      ...data,
-      timestamp: new Date().toISOString(),
-      date: new Date().toLocaleDateString(),
-    };
-
-    for (const [key, value] of Object.entries(replacements)) {
-      const regex = new RegExp(`{{${key}}}`, 'g');
-      prompt = prompt.replace(regex, String(value));
-    }
-
-    return prompt;
   }
 
   /**
    * Validate input data against template requirements
    */
   async validateInput(inputData, templateConfig) {
-    const required = templateConfig.required || [];
+    const required = templateConfig.inputs || [];
 
     for (const field of required) {
       if (!(field in inputData)) {
@@ -186,7 +192,6 @@ export class ContentBuddy {
       }
     }
 
-    // Additional validation can be added here
     return true;
   }
 

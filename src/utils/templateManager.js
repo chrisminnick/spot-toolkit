@@ -56,6 +56,11 @@ export class TemplateManager {
     }
   }
 
+  // Alias for loadTemplate for compatibility
+  async getTemplate(templateId) {
+    return await this.loadTemplate(templateId);
+  }
+
   validateTemplate(template, templateId) {
     const required = ['id', 'version', 'system', 'user'];
     const missing = required.filter((field) => !template[field]);

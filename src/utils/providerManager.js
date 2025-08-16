@@ -96,6 +96,27 @@ export class EnhancedProviderManager {
       this.providers.set(name, provider);
       this.circuitBreakers.set(name, new CircuitBreaker());
     }
+
+    // Set up default fallback chain
+    if (this.providers.size > 0) {
+      this.fallbackChain = Array.from(this.providers.keys());
+    }
+  }
+
+  // Get a provider by name, or default provider
+  async getProvider(providerName = null) {
+    if (providerName && this.providers.has(providerName)) {
+      return this.providers.get(providerName);
+    }
+
+    // Return first available provider as default
+    if (this.providers.size > 0) {
+      return this.providers.values().next().value;
+    }
+
+    // If no providers configured, return a mock provider
+    const MockProvider = await import('../providers/mockProvider.js');
+    return new MockProvider.default();
   }
 
   setFallbackChain(providerNames) {
