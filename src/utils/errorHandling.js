@@ -81,3 +81,49 @@ export function handleProviderError(error, providerName) {
     error.status
   );
 }
+
+export class ErrorHandling {
+  constructor(options = {}) {
+    this.options = options;
+    this.errorCount = 0;
+    this.setupGlobalHandlers();
+  }
+
+  setupGlobalHandlers() {
+    // Handle uncaught exceptions
+    process.on('uncaughtException', (error) => {
+      console.error('Uncaught Exception:', error);
+      this.errorCount++;
+      if (!this.options.exitOnError) {
+        return;
+      }
+      process.exit(1);
+    });
+
+    // Handle unhandled promise rejections
+    process.on('unhandledRejection', (reason, promise) => {
+      console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+      this.errorCount++;
+    });
+  }
+
+  getErrorCount() {
+    return this.errorCount;
+  }
+
+  createError(message, code, details = {}) {
+    return new ContentBuddyError(message, code, details);
+  }
+
+  createRetryableError(message, details = {}) {
+    return new RetryableError(message, details);
+  }
+
+  createValidationError(message, field, value) {
+    return new ValidationError(message, field, value);
+  }
+
+  createAPIError(message, provider, statusCode, details = {}) {
+    return new APIError(message, provider, statusCode, details);
+  }
+}

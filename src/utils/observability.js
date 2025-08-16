@@ -179,3 +179,47 @@ export const logger = new Logger({
 });
 
 export const metrics = new MetricsCollector();
+
+export class Observability {
+  constructor(options = {}) {
+    this.options = options;
+    this.logger = new Logger(options.logger || {});
+    this.metrics = new MetricsCollector();
+  }
+
+  getLogger(context = {}) {
+    if (Object.keys(context).length === 0) {
+      return this.logger;
+    }
+    return this.logger.child(context);
+  }
+
+  getMetrics() {
+    return this.metrics;
+  }
+
+  recordMetric(name, value, tags = {}) {
+    this.metrics.increment(name, value, tags);
+  }
+
+  recordTiming(name, durationMs, tags = {}) {
+    this.metrics.recordTime(name, durationMs, tags);
+  }
+
+  // Logging convenience methods
+  info(message, metadata = {}) {
+    this.logger.info(message, metadata);
+  }
+
+  error(message, metadata = {}) {
+    this.logger.error(message, metadata);
+  }
+
+  warn(message, metadata = {}) {
+    this.logger.warn(message, metadata);
+  }
+
+  debug(message, metadata = {}) {
+    this.logger.debug(message, metadata);
+  }
+}

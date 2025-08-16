@@ -4,6 +4,7 @@
  * Comprehensive system monitoring, health checks, and alerting
  */
 
+import fs from 'fs';
 import { logger, metrics } from './observability.js';
 
 export class HealthChecker {
@@ -198,7 +199,6 @@ export const commonHealthChecks = {
   diskSpace:
     (requiredFreeMB = 100) =>
     () => {
-      const fs = require('fs');
       const stats = fs.statSync('.');
       // Note: This is a simplified check. In production, use a proper disk space check
       return { status: 'ok', note: 'Disk space check not implemented' };
@@ -283,3 +283,58 @@ export class SystemMetrics {
 // Global instances
 export const healthChecker = new HealthChecker();
 export const systemMetrics = new SystemMetrics();
+
+export class Monitoring {
+  constructor(options = {}) {
+    this.options = options;
+    this.healthChecker = new HealthChecker();
+    this.systemMetrics = new SystemMetrics();
+    this.isStarted = false;
+  }
+
+  async start() {
+    if (this.isStarted) {
+      return;
+    }
+
+    // Register default health checks
+    this.healthChecker.register(
+      'system',
+      () => ({ status: 'ok', uptime: process.uptime() }),
+      {
+        critical: true,
+        description: 'Basic system health',
+      }
+    );
+
+    this.healthChecker.register('memory', commonHealthChecks.memory(), {
+      critical: false,
+      description: 'Memory usage check',
+    });
+
+    this.healthChecker.register('disk', commonHealthChecks.diskSpace(), {
+      critical: false,
+      description: 'Disk space check',
+    });
+
+    this.isStarted = true;
+    logger.info('Monitoring system started');
+  }
+
+  async stop() {
+    this.isStarted = false;
+    logger.info('Monitoring system stopped');
+  }
+
+  getHealthChecker() {
+    return this.healthChecker;
+  }
+
+  getSystemMetrics() {
+    return this.systemMetrics;
+  }
+
+  async getHealthStatus() {
+    return await this.healthChecker.runAll();
+  }
+}

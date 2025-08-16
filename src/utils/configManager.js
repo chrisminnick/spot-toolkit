@@ -9,9 +9,42 @@ import path from 'path';
 import { ValidationError } from './errorHandling.js';
 
 export class ConfigManager {
-  constructor(configDir) {
+  constructor(configDir = './configs') {
     this.configDir = configDir;
     this.cache = new Map();
+    this.config = {};
+  }
+
+  async initialize() {
+    // Load default configuration or perform any initialization
+    this.config = {
+      observability: {
+        level: process.env.LOG_LEVEL || 'info',
+        format: process.env.LOG_FORMAT || 'json',
+      },
+      errorHandling: {
+        exitOnError: false,
+      },
+      monitoring: {
+        enabled: true,
+      },
+      providers: {},
+    };
+  }
+
+  get(key, defaultValue = null) {
+    const keys = key.split('.');
+    let value = this.config;
+
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = value[k];
+      } else {
+        return defaultValue;
+      }
+    }
+
+    return value;
   }
 
   async loadConfig(configName, schema = null) {

@@ -200,3 +200,9 @@ export class EnhancedProviderManager {
     return results;
   }
 }
+
+export class ProviderManager extends EnhancedProviderManager {
+  constructor(options = {}) {
+    super(options);
+  }
+}
