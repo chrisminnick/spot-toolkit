@@ -402,3 +402,20 @@ run().catch((err) => {
   console.error(err);
   process.exit(1);
 });
+
+function countItemsMissingCitations(output) {
+  try {
+    const data = JSON.parse(output);
+    const items = Array.isArray(data.items) ? data.items : [];
+    let missing = 0;
+    for (const it of items) {
+      const refs = it.source_refs || it.sources || [];
+      if (!Array.isArray(refs) || refs.length === 0) missing++;
+    }
+    return missing;
+  } catch {
+    // Non-JSON outputs treated as missing citations
+    return -1;
+  }
+}
+

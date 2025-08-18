@@ -16,3 +16,16 @@
 ## Versioning
 Templates are named `id@semver.json`, e.g., `draft_scaffold@1.0.0.json`.
 Log `(template_id, version, model, latency, tokens, violations)` per request.
+
+## Entry Points and CLIs
+
+- **app.js** — integrated CLI with commands: `health`, `generate`, `evaluate`, `validate`. Uses the `ContentBuddy` orchestrator under the hood.
+- **src/cli.js** — task-focused CLI with: `scaffold`, `expand`, `rewrite`, `summarize`, `repurpose`.
+
+## Providers and Fallback
+
+Providers are selected by the `PROVIDER` env var or `configs/providers.json:defaultProvider`. If an API key is missing for a non-mock provider, the factory gracefully falls back to the mock provider.
+
+## Golden Set Coverage
+
+The `golden_set/` directory includes: `briefs/`, `transcripts/`, `repurposing/`, `provider_comparison/`, `performance/`, `style_compliance/`, `edge_cases/`, and `domain_specific/`. Use `node src/eval/runEvaluations.js` to run targeted or full suites.

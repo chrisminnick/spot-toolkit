@@ -10,13 +10,22 @@
     "eval": "node app.js evaluate",
     "health": "node app.js health",
     "validate": "node app.js validate",
-    "eval:comprehensive": "./golden_set/run_comprehensive_evaluation.sh",
+    "eval:scaffold": "node src/eval/runEvaluations.js --directory golden_set --operation scaffold",
+    "eval:expand": "node src/eval/runEvaluations.js --directory golden_set --operation expand",
+    "eval:rewrite": "node src/eval/runEvaluations.js --directory golden_set --operation rewrite",
+    "eval:summarize": "node src/eval/runEvaluations.js --directory golden_set --operation summarize",
+    "eval:repurpose": "node src/eval/runEvaluations.js --directory golden_set --operation repurpose",
+    "eval:all": "npm run eval:scaffold && npm run eval:expand && npm run eval:rewrite && npm run eval:summarize && npm run eval:repurpose",
     "generate": "node app.js generate",
     "scaffold": "node src/cli.js scaffold",
     "test": "npm run validate && npm run health",
     "setup": "cp .env.template .env && echo 'Please edit .env with your API keys'",
     "lint": "echo 'No linter configured'",
-    "clean": "rm -rf logs/ tmp/ .cache/"
+    "clean": "rm -rf logs/ tmp/ .cache/",
+    "expand": "node src/cli.js expand",
+    "rewrite": "node src/cli.js rewrite",
+    "summarize": "node src/cli.js summarize",
+    "repurpose": "node src/cli.js repurpose"
   },
   "dependencies": {
     "dotenv": "^17.2.1"

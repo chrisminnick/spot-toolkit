@@ -1,4 +1,4 @@
-import { MockProvider } from './provider.mock.js';
+import MockProvider from './mockProvider.js';
 
 // Convert CommonJS modules to ES6 imports
 import ProviderFactory from './providerFactory.js';
@@ -14,6 +14,3 @@ export function getProvider() {
     return new MockProvider();
   }
 }
-
-// Export the factory for direct access if needed
-export { ProviderFactory };
