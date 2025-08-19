@@ -2,7 +2,7 @@
 
 # Content Buddy POC
 
-A production-ready proof-of-concept for AI-powered content generation. This system demonstrates a complete workflow from content generation to quality assurance using multiple AI providers.
+An AI-powered content generation tool, focused on reliability, monitoring, and evaluation capabilities. This system demonstrates a complete workflow from content generation to quality assurance using multiple AI providers.
 
 ## 🚀 Features
 
