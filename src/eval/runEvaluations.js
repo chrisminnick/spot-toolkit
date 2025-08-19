@@ -290,6 +290,12 @@ async function run() {
       if (path.isAbsolute(f)) {
         return f;
       } else {
+        // First try resolving relative to current working directory
+        const cwdPath = path.resolve(process.cwd(), f);
+        if (fs.existsSync(cwdPath)) {
+          return cwdPath;
+        }
+        // Fallback to target directory
         return path.resolve(targetDir, f);
       }
     });
@@ -418,4 +424,3 @@ function countItemsMissingCitations(output) {
     return -1;
   }
 }
-

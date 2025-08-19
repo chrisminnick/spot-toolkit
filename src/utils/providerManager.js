@@ -109,6 +109,38 @@ export class EnhancedProviderManager {
       return this.providers.get(providerName);
     }
 
+    // Try to dynamically create provider using ProviderFactory
+    if (providerName) {
+      try {
+        const ProviderFactory = await import('../providers/providerFactory.js');
+        const factory = ProviderFactory.default;
+
+        if (providerName === 'mock') {
+          const provider = factory.createProvider('mock');
+          this.providers.set('mock', provider);
+          return provider;
+        }
+
+        // For other providers, get the API key and create provider
+        const apiKey = factory.getApiKey(providerName);
+        if (apiKey) {
+          const provider = factory.createProvider(providerName, apiKey);
+          this.providers.set(providerName, provider);
+          this.circuitBreakers.set(providerName, new CircuitBreaker());
+          return provider;
+        } else {
+          logger.warn(`No API key found for provider: ${providerName}`, {
+            provider: providerName,
+          });
+        }
+      } catch (error) {
+        logger.error('Failed to create provider dynamically', {
+          provider: providerName,
+          error: error.message,
+        });
+      }
+    }
+
     // Return first available provider as default
     if (this.providers.size > 0) {
       return this.providers.values().next().value;

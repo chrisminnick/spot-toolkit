@@ -5,6 +5,9 @@
  * Integrates all production utilities and provides CLI interface
  */
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import process from 'process';
@@ -109,16 +112,107 @@ class InteractiveMenu {
   async handleGenerate() {
     console.log('\n🚀 Generate Content');
     console.log('Available templates:');
-    console.log('- draft_scaffold@1.0.0');
-    console.log('- repurpose_pack@1.0.0');
-    console.log('- rewrite_localize@1.0.0');
-    console.log('- section_expand@1.0.0');
-    console.log('- summarize_grounded@1.0.0');
 
-    const templateName = await this.prompt('\nEnter template name: ');
-    if (!templateName.trim()) {
-      console.log('❌ Template name is required');
+    // Define templates with their descriptions
+    const templates = [
+      {
+        name: 'draft_scaffold@1.0.0',
+        purpose:
+          'Brief → Scaffold (JSON) - Create content outlines from briefs',
+      },
+      {
+        name: 'section_expand@1.0.0',
+        purpose:
+          'Section → Draft prose - Expand scaffolds into detailed content',
+      },
+      {
+        name: 'repurpose_pack@1.0.0',
+        purpose:
+          'Multi-channel repurposing - Adapt content for different platforms',
+      },
+      {
+        name: 'rewrite_localize@1.0.0',
+        purpose:
+          'Rewrite/localize text with constraints - Adapt content for different audiences',
+      },
+      {
+        name: 'summarize_grounded@1.0.0',
+        purpose:
+          'Summarize with timestamped citations - Extract key points from transcripts',
+      },
+    ];
+
+    // Display numbered list of templates
+    templates.forEach((template, index) => {
+      console.log(`${index + 1}. ${template.name}`);
+      console.log(`   ${template.purpose}`);
+    });
+
+    const selection = await this.prompt('\nEnter template number (1-5): ');
+    const templateNumber = parseInt(selection.trim());
+
+    if (
+      isNaN(templateNumber) ||
+      templateNumber < 1 ||
+      templateNumber > templates.length
+    ) {
+      console.log('❌ Please enter a valid template number (1-5)');
       return;
+    }
+
+    const templateName = templates[templateNumber - 1].name;
+
+    // Provider selection
+    console.log('\nAvailable providers:');
+    console.log('1. OpenAI (GPT-4) - Requires OPENAI_API_KEY');
+    console.log('2. Anthropic (Claude) - Requires ANTHROPIC_API_KEY');
+    console.log('3. Google Gemini - Requires GEMINI_API_KEY');
+    console.log('4. Mock Provider (for testing)');
+
+    const providerSelection = await this.prompt(
+      '\nEnter provider number (1-4): '
+    );
+    const providerNumber = parseInt(providerSelection.trim());
+
+    let selectedProvider;
+    let requiredApiKey;
+
+    switch (providerNumber) {
+      case 1:
+        selectedProvider = 'openai';
+        requiredApiKey = 'OPENAI_API_KEY';
+        break;
+      case 2:
+        selectedProvider = 'anthropic';
+        requiredApiKey = 'ANTHROPIC_API_KEY';
+        break;
+      case 3:
+        selectedProvider = 'gemini';
+        requiredApiKey = 'GEMINI_API_KEY';
+        break;
+      case 4:
+        selectedProvider = 'mock';
+        requiredApiKey = null;
+        break;
+      default:
+        console.log('❌ Please enter a valid provider number (1-4)');
+        return;
+    }
+
+    // Check if API key is available (except for mock provider)
+    if (selectedProvider !== 'mock' && requiredApiKey) {
+      const apiKey = process.env[requiredApiKey];
+      if (!apiKey) {
+        console.log(`❌ ${requiredApiKey} environment variable not found.`);
+        console.log(
+          `Please set your API key: export ${requiredApiKey}=your_key_here`
+        );
+        console.log('Or select Mock Provider (option 4) for testing.');
+        return;
+      }
+      console.log(`✅ Using ${selectedProvider} provider`);
+    } else if (selectedProvider === 'mock') {
+      console.log('✅ Using mock provider (test mode)');
     }
 
     // Show available input files
@@ -126,21 +220,13 @@ class InteractiveMenu {
     const inputFiles = this.scanInputFiles();
 
     if (inputFiles.length === 0) {
-      console.log('No input files found in content directories.');
-      console.log('You can still enter a custom file path below.');
+      console.log(
+        'No input files found. Create files in my_content/ or golden_set/'
+      );
     } else {
       console.log('─'.repeat(70));
-      console.log(
-        '# | File Name                    | Directory           | Size'
-      );
-      console.log('─'.repeat(70));
-
       inputFiles.forEach((file, index) => {
-        const num = (index + 1).toString().padStart(2);
-        const name = file.name.padEnd(28);
-        const dir = file.directory.padEnd(19);
-        const size = `${file.size}KB`.padStart(6);
-        console.log(`${num}| ${name} | ${dir} | ${size}`);
+        console.log(`${index + 1}. ${file.name} (${file.path})`);
       });
       console.log('─'.repeat(70));
     }
@@ -155,12 +241,8 @@ class InteractiveMenu {
 
       if (choiceNum >= 1 && choiceNum <= inputFiles.length) {
         inputFilePath = inputFiles[choiceNum - 1].path;
-        console.log(`Selected: ${inputFilePath}`);
-      } else if (choice.trim()) {
-        inputFilePath = choice.trim();
       } else {
-        console.log('❌ Input file selection is required');
-        return;
+        inputFilePath = choice.trim();
       }
     } else {
       inputFilePath = await this.prompt('Enter input file path: ');
@@ -174,15 +256,92 @@ class InteractiveMenu {
     const outputFile = await this.prompt('Enter output file path (optional): ');
 
     try {
+      // Special handling for section_expand template with JSON input files
+      if (
+        templateName.trim() === 'section_expand@1.0.0' &&
+        inputFilePath.endsWith('.json')
+      ) {
+        const fs = await import('fs');
+        const scaffoldContent = fs.readFileSync(inputFilePath, 'utf8');
+        const scaffold = JSON.parse(scaffoldContent);
+
+        // Check if the file has sections
+        if (scaffold.sections && Array.isArray(scaffold.sections)) {
+          console.log('\n📑 Available sections to expand:');
+          console.log('─'.repeat(70));
+
+          scaffold.sections.forEach((section, index) => {
+            console.log(`${index + 1}. ${section.heading}`);
+          });
+
+          console.log('─'.repeat(70));
+
+          const sectionChoice = await this.prompt(
+            `\nSelect section to expand (1-${scaffold.sections.length}): `
+          );
+          const sectionIndex = parseInt(sectionChoice.trim()) - 1;
+
+          if (sectionIndex >= 0 && sectionIndex < scaffold.sections.length) {
+            // Extract the selected section
+            const selectedSection = scaffold.sections[sectionIndex];
+
+            // Create section_json parameter
+            const sectionJson = JSON.stringify(selectedSection);
+
+            console.log('\n⏳ Expanding section...');
+
+            // Run with the selected section as parameter
+            const { spawn } = await import('child_process');
+            const args = [
+              'src/cli.js',
+              'expand',
+              '--section_json',
+              sectionJson,
+            ];
+
+            if (outputFile.trim()) {
+              args.push('--output', outputFile.trim());
+            }
+
+            const child = spawn('node', args, { stdio: 'inherit' });
+
+            await new Promise((resolve, reject) => {
+              child.on('close', (code) => {
+                if (code === 0) {
+                  if (outputFile.trim()) {
+                    console.log(
+                      `✅ Expanded content saved to: ${outputFile.trim()}`
+                    );
+                  }
+                  resolve();
+                } else {
+                  reject(new Error(`Expand command failed with code ${code}`));
+                }
+              });
+              child.on('error', reject);
+            });
+
+            await this.prompt('\nPress Enter to continue...');
+            return;
+          } else {
+            console.log('❌ Invalid section selection');
+            await this.prompt('\nPress Enter to continue...');
+            return;
+          }
+        }
+      }
+
+      // Default behavior for other templates
       console.log('\n⏳ Generating content...');
       await this.app.runGenerate([
         templateName.trim(),
         inputFilePath,
         outputFile.trim(),
+        selectedProvider,
       ]);
 
       if (outputFile.trim()) {
-        console.log(`✅ Content generated and saved to: ${outputFile.trim()}`);
+        console.log(`✅ Content saved to: ${outputFile.trim()}`);
       }
     } catch (error) {
       console.log(`❌ Generation failed: ${error.message}`);
@@ -275,17 +434,155 @@ class InteractiveMenu {
 
   async handleEvaluate() {
     console.log('\n📊 Run Evaluations');
-    const templateName = await this.prompt(
-      'Enter template name (optional - leave blank for all): '
-    );
+    console.log('1. Evaluate a generated file');
+    console.log('2. Run evaluation suite on templates');
+    console.log('3. Back to main menu');
 
-    try {
-      console.log('\n⏳ Running evaluations...');
-      await this.app.runEvaluate(
-        templateName.trim() ? [templateName.trim()] : []
-      );
-    } catch (error) {
-      console.log(`❌ Evaluation failed: ${error.message}`);
+    const choice = await this.prompt('\nSelect an option (1-3): ');
+
+    switch (choice.trim()) {
+      case '1':
+        // Show available files to evaluate
+        console.log('\n📁 Select a file to evaluate:');
+        const inputFiles = this.scanInputFiles();
+
+        if (inputFiles.length === 0) {
+          console.log('No input files found. Generate content first.');
+          await this.prompt('\nPress Enter to continue...');
+          return;
+        }
+
+        // Display files
+        console.log('─'.repeat(70));
+        inputFiles.forEach((file, index) => {
+          console.log(`${index + 1}. ${file.name} (${file.path})`);
+        });
+        console.log('─'.repeat(70));
+
+        const fileChoice = await this.prompt(
+          '\nEnter file number (1-' + inputFiles.length + ') or path: '
+        );
+
+        let filePath;
+        const fileChoiceNum = parseInt(fileChoice.trim());
+        if (fileChoiceNum >= 1 && fileChoiceNum <= inputFiles.length) {
+          filePath = inputFiles[fileChoiceNum - 1].path;
+        } else {
+          filePath = fileChoice.trim();
+        }
+
+        // Determine content type
+        console.log('\n📑 Select content type:');
+        console.log('1. Scaffold (JSON structure)');
+        console.log('2. Expanded section (prose)');
+        console.log('3. Rewritten content');
+        console.log('4. Summary');
+        console.log('5. Repurposed content');
+
+        const typeChoice = await this.prompt('\nSelect content type (1-5): ');
+
+        let operation;
+        switch (typeChoice.trim()) {
+          case '1':
+            operation = 'scaffold';
+            break;
+          case '2':
+            operation = 'expand';
+            break;
+          case '3':
+            operation = 'rewrite';
+            break;
+          case '4':
+            operation = 'summarize';
+            break;
+          case '5':
+            operation = 'repurpose';
+            break;
+          default:
+            operation = 'scaffold';
+        }
+
+        try {
+          console.log(`\n⏳ Evaluating ${path.basename(filePath)}...`);
+
+          // Using a simpler approach that passes the file directly
+          // This avoids issues with flag parsing in runEvaluations.js
+          const { spawn } = await import('child_process');
+
+          // Just pass the file as a positional argument and the operation flag
+          const args = [
+            'src/eval/runEvaluations.js',
+            '--operation',
+            operation,
+            filePath,
+          ];
+
+          const child = spawn('node', args, { stdio: 'inherit' });
+
+          await new Promise((resolve, reject) => {
+            child.on('close', (code) => {
+              if (code === 0) {
+                resolve();
+              } else {
+                reject(new Error(`Evaluation failed with code ${code}`));
+              }
+            });
+            child.on('error', reject);
+          });
+        } catch (error) {
+          console.log(`❌ Evaluation failed: ${error.message}`);
+        }
+        break;
+
+      case '2':
+        // Run standard evaluation suite
+        console.log('\nAvailable templates for evaluation:');
+        console.log('0. All templates');
+        console.log('1. draft_scaffold@1.0.0 - Brief → Scaffold (JSON)');
+        console.log('2. section_expand@1.0.0 - Section → Draft prose');
+        console.log('3. repurpose_pack@1.0.0 - Multi-channel repurposing');
+        console.log('4. rewrite_localize@1.0.0 - Rewrite/localize text');
+        console.log('5. summarize_grounded@1.0.0 - Summarize with citations');
+
+        const templateChoice = await this.prompt(
+          'Enter template number (0 for all, 1-5 for specific): '
+        );
+
+        const templateNumber = parseInt(templateChoice.trim());
+        let templateName = '';
+
+        if (templateNumber === 0 || isNaN(templateNumber)) {
+          // Run all templates
+          templateName = '';
+        } else if (templateNumber >= 1 && templateNumber <= 5) {
+          const templateNames = [
+            'draft_scaffold@1.0.0',
+            'section_expand@1.0.0',
+            'repurpose_pack@1.0.0',
+            'rewrite_localize@1.0.0',
+            'summarize_grounded@1.0.0',
+          ];
+          templateName = templateNames[templateNumber - 1];
+        } else {
+          console.log('❌ Please enter a valid template number (0-5)');
+          break;
+        }
+
+        try {
+          console.log('\n⏳ Running evaluation suite...');
+          await this.app.runEvaluate(
+            templateName.trim() ? [templateName.trim()] : []
+          );
+        } catch (error) {
+          console.log(`❌ Evaluation failed: ${error.message}`);
+        }
+        break;
+
+      case '3':
+        return; // Back to main menu
+
+      default:
+        console.log('❌ Invalid choice.');
     }
 
     await this.prompt('\nPress Enter to continue...');
@@ -539,10 +836,12 @@ class Application {
 
   async runGenerate(args) {
     try {
-      const [templateName, inputFile, outputFile] = args;
+      const [templateName, inputFile, outputFile, provider] = args;
 
       if (!templateName || !inputFile) {
-        console.error('Usage: generate <template> <input-file> [output-file]');
+        console.error(
+          'Usage: generate <template> <input-file> [output-file] [provider]'
+        );
         process.exit(1);
       }
 
@@ -550,6 +849,7 @@ class Application {
         template: templateName,
         inputFile,
         outputFile,
+        provider,
       });
 
       console.log('Generation completed successfully:', result);

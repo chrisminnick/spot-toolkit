@@ -1,5 +1,3 @@
-<!-- filepath: /Users/chrisminnick/code/src/github.com/chrisminnick/content-buddy/README.md -->
-
 # Content Buddy POC
 
 An AI-powered content generation tool, focused on reliability, monitoring, and evaluation capabilities. This system demonstrates a complete workflow from content generation to quality assurance using multiple AI providers.
@@ -466,6 +464,12 @@ npm run scaffold -- --asset_type "blog post" --topic "AI"
 3. Validate changes with `npm run validate`
 4. Run comprehensive evaluation: `npm run eval:all`
 5. Test with `npm test` before submitting
+
+## 📄 Copyright
+
+© 2025 Chris Minnick. All rights reserved.
+
+This software and associated documentation files (the "Software") are protected by copyright and other intellectual property laws. The Software is licensed, not sold.
 
 ## 📄 License
 

@@ -9,7 +9,8 @@
     "max_chars": 280,
     "hashtags_max": 2,
     "links_max": 1,
-    "linebreaks": false
+    "linebreaks": false,
+    "tone": "tech bro"
   },
   "email": {
     "subject_max": 60,
