@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node app.js",
     "dev": "NODE_ENV=development node app.js",
-    "eval": "node app.js evaluate",
+    "eval": "node src/eval/runEvaluations.js",
+    "eval:interactive": "node app.js evaluate",
     "health": "node app.js health",
     "validate": "node app.js validate",
     "eval:scaffold": "node src/eval/runEvaluations.js --directory golden_set --operation scaffold",
