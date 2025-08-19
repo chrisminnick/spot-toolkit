@@ -1,6 +1,8 @@
+<!-- filepath: /Users/chrisminnick/code/src/github.com/chrisminnick/content-buddy/README.md -->
+
 # Content Buddy POC
 
-A production-ready proof-of-concept for AI-powered content generation with enterprise-grade reliability, monitoring, and evaluation capabilities. This system demonstrates a complete workflow from content generation to quality assurance using multiple AI providers.
+A production-ready proof-of-concept for AI-powered content generation. This system demonstrates a complete workflow from content generation to quality assurance using multiple AI providers.
 
 ## 🚀 Features
 
@@ -23,7 +25,11 @@ A production-ready proof-of-concept for AI-powered content generation with enter
 
 ```bash
 # Clone and navigate to project
-cd content-buddy-poc
+git clone <repository-url>
+cd content-buddy
+
+# Install dependencies
+npm install
 
 # Create environment configuration
 npm run setup
@@ -37,44 +43,55 @@ OPENAI_API_KEY=your_api_key_here
 ### 2. Verify Installation
 
 ```bash
-# Check system health
-npm run health
+# Check system health and validate templates
+npm test
 
-# Validate templates and configuration
+# Or run individual checks
+npm run health
 npm run validate
 ```
 
 ### 3. Generate Content
 
 ```bash
+# Start interactive mode (recommended)
+npm start
+
 # Generate content using a template
 npm run generate repurpose_pack@1.0.0 my-content/build-ai-applications.json output.json
 
-# Or use the CLI directly
-node app.js generate repurpose_pack@1.0.0 input.json output.json
+# Use task-specific commands
+npm run scaffold -- --asset_type "blog post" --topic "AI applications" --audience "developers" --tone "technical" --word_count 800
 ```
 
 ### 4. Run Evaluations
 
 ```bash
-# Run comprehensive evaluation suite
-npm run eval:comprehensive
+# Run all evaluations
+npm run eval:all
 
-# Run specific evaluations
-npm run evaluate
+# Run specific operation evaluations
+npm run eval:scaffold
+npm run eval:expand
+npm run eval:rewrite
+npm run eval:summarize
+npm run eval:repurpose
+
+# Or run comprehensive evaluation
+npm run eval
 ```
 
 ## 🏗️ Architecture
 
 ### Core Components
 
-- **`app.js`** - Main application entry point with integrated CLI
-- **`src/ContentBuddy.js`** - Core content generation orchestrator
-- **`src/utils/`** - Production utilities (error handling, monitoring, etc.)
-- **`prompts/`** - Versioned JSON prompt templates
-- **`golden_set/`** - Comprehensive test data across 9 categories
-- **`configs/`** - Provider and channel configurations
-- **`style/`** - Style pack governance rules
+- **[`app.js`](app.js)** - Main application entry point with integrated CLI
+- **[`src/ContentBuddy.js`](src/ContentBuddy.js)** - Core content generation orchestrator
+- **[`src/utils/`](src/utils/)** - Production utilities (error handling, monitoring, etc.)
+- **[`prompts/`](prompts/)** - Versioned JSON prompt templates
+- **[`golden_set/`](golden_set/)** - Comprehensive test data across 9 categories
+- **[`configs/`](configs/)** - Provider and channel configurations
+- **[`style/`](style/)** - Style pack governance rules
 
 ### Production Utilities
 
@@ -95,7 +112,7 @@ Key configuration options in `.env`:
 # Core Settings
 NODE_ENV=development          # development/production
 LOG_LEVEL=info               # debug/info/warn/error
-PROVIDER=openai              # openai/anthropic/gemini
+PROVIDER=openai              # openai/anthropic/gemini/mock
 
 # AI Provider Keys (set at least one)
 OPENAI_API_KEY=your_key
@@ -108,7 +125,7 @@ HEALTH_CHECK_INTERVAL=60000
 METRICS_ENABLED=true
 ```
 
-## Providers
+## 🤖 Providers
 
 Content Buddy supports multiple AI providers out of the box:
 
@@ -117,11 +134,11 @@ Content Buddy supports multiple AI providers out of the box:
 - **Google Gemini** (`gemini`) - Set `GEMINI_API_KEY`
 - **Mock Provider** (`mock`) - No API key needed, returns sample responses
 
-Switch providers by setting the `PROVIDER` environment variable or modifying `configs/providers.json`.
+Switch providers by setting the `PROVIDER` environment variable or modifying [`configs/providers.json`](configs/providers.json).
 
 ### Provider Configuration
 
-Default settings are in `configs/providers.json`:
+Default settings are in [`configs/providers.json`](configs/providers.json):
 
 ```json
 {
@@ -142,45 +159,124 @@ Default settings are in `configs/providers.json`:
 }
 ```
 
-## Scripts
+## 📜 Available Scripts
 
-- `node src/cli.js scaffold ...` — brief → scaffold (JSON)
-- `node src/cli.js expand --section_json '<json>'` — section → draft
-- `node src/cli.js rewrite --text '...' --audience '...' --tone '...' --grade_level 8`
-- `node src/cli.js summarize --file golden_set/transcripts/example_transcript.txt --mode executive`
-- `node src/cli.js repurpose --file golden_set/repurposing/example_article.md`
+### Main Application Scripts
 
-## Evaluation
+```bash
+npm start                     # Start interactive mode (node app.js)
+npm run dev                   # Start in development mode
+npm run generate             # Generate content using templates
+npm run health               # Check system health
+npm run validate             # Validate templates and configuration
+npm test                     # Run health check + validation
+```
+
+### Content Generation Scripts
+
+```bash
+# Task-specific content generation
+npm run scaffold             # Brief → Scaffold (JSON structure)
+npm run expand               # Section → Expanded prose
+npm run rewrite              # Rewrite/localize content
+npm run summarize            # Summarize with citations
+npm run repurpose            # Repurpose to multiple channels
+```
+
+### Evaluation Scripts
+
+```bash
+npm run eval                 # Run basic evaluation
+npm run eval:scaffold        # Evaluate scaffolding operation
+npm run eval:expand          # Evaluate expand operation
+npm run eval:rewrite         # Evaluate rewrite operation
+npm run eval:summarize       # Evaluate summarize operation
+npm run eval:repurpose       # Evaluate repurpose operation
+npm run eval:all             # Run all evaluation operations
+```
+
+### Utility Scripts
+
+```bash
+npm run setup                # Copy .env template and prompt for configuration
+npm run clean                # Remove temporary files and logs
+npm run lint                 # Code linting (placeholder)
+```
+
+## 📝 Usage Examples
+
+### Using npm Scripts
+
+```bash
+# Setup and validate
+npm run setup
+npm test
+
+# Generate content interactively
+npm start
+
+# Task-specific generation with parameters
+npm run scaffold -- --asset_type "landing page" --topic "Privacy-first analytics" --audience "startup founders" --tone "confident" --word_count 600
+
+npm run expand -- --section_json '{"heading":"Why Privacy Matters","bullets":["Build trust","Comply with regulations"]}'
+
+npm run rewrite -- --text "Original content..." --audience "CFOs" --tone "formal" --grade_level 9 --words 140 --locale "en-GB"
+
+npm run summarize -- --file golden_set/transcripts/build-ai-applications-1.txt --mode executive
+
+npm run repurpose -- --file golden_set/repurposing/example_article.md
+```
+
+### Direct CLI Usage
+
+```bash
+# Interactive mode
+node app.js
+
+# Direct commands
+node app.js health
+node app.js generate repurpose_pack@1.0.0 input.json output.json
+node app.js evaluate
+
+# Task-specific CLI
+node src/cli.js scaffold --asset_type "blog post" --topic "AI applications"
+node src/cli.js expand --section_json '{"heading":"Title","bullets":["Point 1"]}'
+```
+
+## 🧪 Evaluation
 
 The evaluation system allows you to test and benchmark your prompts and AI provider performance across different scenarios.
 
-### Running Evaluations
-
-**Evaluate all brief files (default):**
+### Running Evaluations with npm Scripts
 
 ```bash
-node src/eval/runEvaluations.js
+# Run all evaluation operations
+npm run eval:all
+
+# Run specific operation evaluations
+npm run eval:scaffold        # Test brief → scaffold generation
+npm run eval:expand          # Test section expansion
+npm run eval:rewrite         # Test content rewriting
+npm run eval:summarize       # Test transcript summarization
+npm run eval:repurpose       # Test content repurposing
+
+# Basic evaluation
+npm run eval
 ```
 
-**Evaluate specific brief files:**
+### Running Evaluations Directly
 
 ```bash
-# Single file
-node src/eval/runEvaluations.js brief1.json
+# Evaluate all brief files (default)
+node src/eval/runEvaluations.js
 
-# Multiple files
+# Evaluate specific files
 node src/eval/runEvaluations.js brief1.json brief2.json
 
-# Using the --files flag
-node src/eval/runEvaluations.js --files brief1.json brief2.json
+# Evaluate specific directory and operation
+node src/eval/runEvaluations.js --directory golden_set/briefs --operation scaffold
 
-# Without .json extension (auto-added)
-node src/eval/runEvaluations.js brief1 brief2
-```
-
-**Get help:**
-
-```bash
+# Get help
 node src/eval/runEvaluations.js --help
 ```
 
@@ -219,22 +315,22 @@ The evaluation harness computes several key metrics:
 
 ### Golden Set Structure
 
-The evaluation system uses a comprehensive test suite in the `golden_set/` directory organized by test purpose:
+The evaluation system uses a comprehensive test suite in the [`golden_set/`](golden_set/) directory organized by test purpose:
 
 **Core Test Categories:**
 
-- `golden_set/briefs/` - Sample input briefs for testing scaffold generation (includes easy, medium, hard, and extreme complexity levels)
-- `golden_set/transcripts/` - Sample transcripts for summarization testing
-- `golden_set/repurposing/` - Sample content for repurposing evaluation
+- [`golden_set/briefs/`](golden_set/briefs/) - Sample input briefs for testing scaffold generation (includes easy, medium, hard, and extreme complexity levels)
+- [`golden_set/transcripts/`](golden_set/transcripts/) - Sample transcripts for summarization testing
+- [`golden_set/repurposing/`](golden_set/repurposing/) - Sample content for repurposing evaluation
 
 **Quality Assurance Categories:**
 
-- `golden_set/edge_cases/` - Boundary conditions and unusual inputs (empty fields, special characters, extreme complexity)
-- `golden_set/style_compliance/` - Content designed to test style pack rule adherence (must_use/must_avoid terms, terminology)
-- `golden_set/performance/` - Large files and stress test scenarios
-- `golden_set/provider_comparison/` - Standardized tests for comparing AI provider outputs
-- `golden_set/domain_specific/` - Specialized content requiring domain expertise (technical, legal, medical)
-- `golden_set/expected_outputs/` - Reference outputs for validation and regression testing
+- [`golden_set/edge_cases/`](golden_set/edge_cases/) - Boundary conditions and unusual inputs (empty fields, special characters, extreme complexity)
+- [`golden_set/style_compliance/`](golden_set/style_compliance/) - Content designed to test style pack rule adherence (must_use/must_avoid terms, terminology)
+- [`golden_set/performance/`](golden_set/performance/) - Large files and stress test scenarios
+- [`golden_set/provider_comparison/`](golden_set/provider_comparison/) - Standardized tests for comparing AI provider outputs
+- [`golden_set/domain_specific/`](golden_set/domain_specific/) - Specialized content requiring domain expertise (technical, legal, medical)
+- [`golden_set/expected_outputs/`](golden_set/expected_outputs/) - Reference outputs for validation and regression testing
 
 **File Naming Convention:**
 Files follow the pattern: `{type}_{difficulty}_{description}.{ext}`
@@ -243,56 +339,22 @@ Files follow the pattern: `{type}_{difficulty}_{description}.{ext}`
 - `transcript_hard_technical_meeting.txt` - Complex technical meeting transcript
 - `article_medium_remote_teams.md` - Medium complexity repurposing content
 
-### Advanced Evaluation
-
-**Comprehensive Test Suite:**
-
-```bash
-# Run the full evaluation suite across all test categories
-./scripts/run_comprehensive_evaluation.sh
-
-# Validate golden set integrity before running evaluations
-node scripts/validate_golden_set.js
-
-# Test specific categories
-node src/eval/runEvaluations.js -d golden_set/edge_cases -o scaffold
-node src/eval/runEvaluations.js -d golden_set/performance -o summarize
-node src/eval/runEvaluations.js -d golden_set/style_compliance -o scaffold
-```
-
-**Test Categories Explained:**
-
-- **Edge Cases**: Tests system robustness with empty fields, special characters, and extreme complexity
-- **Performance**: Stress tests with large content to measure latency and token usage
-- **Style Compliance**: Validates adherence to style pack rules and terminology
-- **Provider Comparison**: Standardized tests for comparing different AI providers
-- **Domain Specific**: Tests requiring specialized knowledge (technical, legal, etc.)
-
-**Quality Metrics:**
-The improved golden set measures:
-
-- Content accuracy and completeness
-- Style pack rule compliance
-- Response time and token efficiency
-- Error handling and edge case robustness
-- Cross-provider consistency
-
 ### Comparing Providers
 
 You can compare different AI providers by switching the `PROVIDER` environment variable and running the same evaluation:
 
 ```bash
 # Test with OpenAI
-PROVIDER=openai node src/eval/runEvaluations.js
+PROVIDER=openai npm run eval:all
 
 # Test with Claude
-PROVIDER=anthropic node src/eval/runEvaluations.js
+PROVIDER=anthropic npm run eval:all
 
 # Test with mock provider (no API costs)
-PROVIDER=mock node src/eval/runEvaluations.js
+PROVIDER=mock npm run eval:all
 ```
 
-## Environment Variables
+## 🌍 Environment Variables
 
 ```bash
 # Provider selection
@@ -307,21 +369,104 @@ GEMINI_API_KEY=your_gemini_key
 OPENAI_MODEL=gpt-4-turbo
 ANTHROPIC_MODEL=claude-3-opus-20240229
 GEMINI_MODEL=gemini-1.5-pro-latest
+
+# System settings
+NODE_ENV=development               # development/production
+LOG_LEVEL=info                    # debug/info/warn/error
+LOG_FORMAT=json                   # json/text
+
+# Performance tuning
+CIRCUIT_BREAKER_THRESHOLD=5
+HEALTH_CHECK_INTERVAL=60000
+METRICS_ENABLED=true
 ```
 
-## Notes
+## 📁 Project Structure
 
-- **Zero dependencies** - Uses Node.js built-in fetch and ES6 modules
+```
+content-buddy/
+├── app.js                    # Main CLI application
+├── src/
+│   ├── ContentBuddy.js      # Core orchestrator
+│   ├── cli.js               # Task-specific CLI
+│   ├── providers/           # AI provider implementations
+│   ├── utils/               # Production utilities
+│   └── eval/                # Evaluation system
+├── prompts/                 # Versioned JSON templates
+├── golden_set/              # Test data and evaluation
+├── configs/                 # Configuration files
+├── style/                   # Style governance
+├── docs/                    # Additional documentation
+└── scripts/                 # Automation scripts
+```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**1. "Provider not found" error:**
+
+```bash
+# Check your .env file has the correct PROVIDER value
+echo $PROVIDER
+# Should be one of: openai, anthropic, gemini, mock
+```
+
+**2. "API key not found" error:**
+
+```bash
+# Ensure you've set the appropriate API key
+echo $OPENAI_API_KEY  # or $ANTHROPIC_API_KEY, $GEMINI_API_KEY
+```
+
+**3. "Template not found" error:**
+
+```bash
+# Validate all templates
+npm run validate
+```
+
+**4. npm script parameters:**
+
+```bash
+# Use -- to pass parameters to npm run scripts
+npm run scaffold -- --asset_type "blog post" --topic "AI"
+# Not: npm run scaffold --asset_type "blog post" --topic "AI"
+```
+
+### Getting Help
+
+- Run `npm start` for interactive mode (recommended for beginners)
+- Run `npm run validate` to check templates and configuration
+- Run `npm run health` to verify system status
+- Check the [docs/](docs/) directory for detailed guides
+- Review the [golden_set/README.md](golden_set/README.md) for evaluation help
+
+## 🚀 Notes
+
+- **Minimal dependencies** - Only uses `dotenv` for environment variable loading
 - **Provider abstraction** - Easy to add new AI providers or swap between existing ones
 - **Graceful fallback** - Automatically falls back to mock provider if API keys are missing
 - **Versioned prompts** - Prompts are plain JSON with `{placeholders}` compatible with most prompt-management tools
 - **Production ready patterns** - Includes error handling, configuration management, and evaluation framework
 
-## Development
+## 🛠️ Development
 
-To add a new provider:
+### Adding a New Provider
 
-1. Create `src/providers/newProvider.js` extending the base `Provider` class
-2. Add provider configuration to `configs/providers.json`
-3. Update `providerFactory.js` with the new provider case
-4. Add API key handling in the factory's `getApiKey()` method
+1. Create `src/providers/newProvider.js` extending the base [`Provider`](src/providers/Provider.js) class
+2. Add provider configuration to [`configs/providers.json`](configs/providers.json)
+3. Update [`src/utils/providerManager.js`](src/utils/providerManager.js) with the new provider case
+4. Add API key handling in the provider factory's `getApiKey()` method
+
+### Contributing
+
+1. Follow the existing code structure and patterns
+2. Add appropriate tests in the [`golden_set/`](golden_set/) directory
+3. Validate changes with `npm run validate`
+4. Run comprehensive evaluation: `npm run eval:all`
+5. Test with `npm test` before submitting
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
