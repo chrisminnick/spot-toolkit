@@ -24,7 +24,7 @@ An AI-powered content generation tool, focused on reliability, monitoring, and e
 
 ```bash
 # Clone and navigate to project
-git clone <repository-url>
+git clone https://github.com/chrisminnick/content-buddy.git
 cd content-buddy
 
 # Install dependencies
