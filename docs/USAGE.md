@@ -249,6 +249,55 @@ Evaluations measure several key metrics:
 
 ## Advanced Usage
 
+### Style Linting (Offline)
+
+Content Buddy includes a standalone style linter that validates content against your style pack rules without making API calls:
+
+```bash
+# Lint a specific content file
+npm run lint my_content/article.txt
+npm run lint golden_set/repurposing/article_easy_api_security.md
+
+# The linter performs offline checks for:
+# • Reading level (Flesch-Kincaid grade calculation)
+# • Banned terms from style pack must_avoid list
+# • Required terms from style pack must_use list
+# • Reading level compliance against target range
+
+# Example output:
+Style Lint Report for: article.txt
+==================================================
+Reading Level: 8.2 (Target: Grade 8-10)
+Reading Level OK: ✅
+
+✅ No banned terms found
+✅ All required terms present
+
+Full Report (JSON):
+{
+  "banned": [],
+  "missingRequired": [],
+  "readingLevelOk": true,
+  "readingLevel": 8.2
+}
+```
+
+**Style Pack Configuration:**
+
+Edit `style/stylepack.json` to customize linting rules:
+
+```json
+{
+  "brand_voice": "Confident, friendly, concrete; no hype.",
+  "reading_level": "Grade 8-10",
+  "must_use": ["customer", "solution"],
+  "must_avoid": ["revolutionary", "disruptive", "AI magic"],
+  "terminology": {
+    "user": "customer"
+  }
+}
+```
+
 ### Batch Processing
 
 Process multiple files using shell scripting:

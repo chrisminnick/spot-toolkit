@@ -9,6 +9,7 @@ An AI-powered content generation tool, focused on reliability, monitoring, and e
 - **Comprehensive Evaluation** - Golden set testing with 9 test categories
 - **Template Management** - Versioned JSON templates with A/B testing
 - **Style Governance** - Brand voice enforcement and content validation
+- **Offline Style Linting** - Check content compliance without API calls
 - **Observability** - Structured logging, metrics, and monitoring
 - **CLI Interface** - Complete command-line interface for all operations
 
@@ -198,7 +199,30 @@ npm run eval:all             # Run all evaluation operations
 ```bash
 npm run setup                # Copy .env template and prompt for configuration
 npm run clean                # Remove temporary files and logs
-npm run lint                 # Code linting (placeholder)
+npm run lint                 # Check content style compliance (offline)
+npm run lint:content         # Explicit content style linting
+```
+
+### Style Linting
+
+Content Buddy includes an offline style linter that validates content against your style pack rules:
+
+```bash
+# Lint a specific content file
+npm run lint my_content/article.txt
+
+# The linter checks:
+# ✅ Reading level (Flesch-Kincaid grade)
+# ✅ Banned terms (must_avoid list)
+# ✅ Required terms (must_use list)
+# ✅ Reading level compliance
+
+# Example output:
+# Style Lint Report for: article.txt
+# Reading Level: 8.2 (Target: Grade 8-10)
+# Reading Level OK: ✅
+# ✅ No banned terms found
+# ✅ All required terms present
 ```
 
 ## 📝 Usage Examples
