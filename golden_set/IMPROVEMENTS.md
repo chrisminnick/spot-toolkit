@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `golden_set` directory has been significantly enhanced to provide a comprehensive evaluation framework for the Content Buddy system. The improvements transform it from a basic collection of sample files into a robust testing suite that can thoroughly evaluate AI-powered content generation across multiple dimensions.
+The `golden_set` directory has been significantly enhanced to provide a comprehensive evaluation framework for the SPOT system. The improvements transform it from a basic collection of sample files into a robust testing suite that can thoroughly evaluate AI-powered content generation across multiple dimensions.
 
 ## What Was Improved
 
@@ -187,4 +187,4 @@ The enhanced golden set provides a solid foundation for:
 4. **Quality Gates**: Ensuring content meets standards before deployment
 5. **Research and Development**: Data-driven optimization of prompts and models
 
-This transformation makes the golden set a powerful tool for maintaining and improving content generation quality while providing comprehensive evaluation capabilities for the Content Buddy system.
+This transformation makes the golden set a powerful tool for maintaining and improving content generation quality while providing comprehensive evaluation capabilities for the SPOT system.

@@ -1,5 +1,5 @@
 /**
- * Content Buddy Main Application Class
+ * SPOT Main Application Class
  * Orchestrates content generation using AI providers, templates, and style packs
  */
 
@@ -12,7 +12,7 @@ import { compilePrompt, loadStylePack } from './utils/prompting.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-export class ContentBuddy {
+export class SPOT {
   constructor(options = {}) {
     this.providerManager = options.providerManager;
     this.templateManager = options.templateManager;

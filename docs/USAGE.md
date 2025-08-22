@@ -1,6 +1,6 @@
-# Using Content Buddy
+# Using SPOT
 
-A comprehensive guide to using Content Buddy for AI-powered content generation.
+A comprehensive guide to using SPOT for AI-powered content generation.
 
 ## Quick Start
 
@@ -79,7 +79,7 @@ npm run repurpose -- --file golden_set/repurposing/article_medium_remote_teams.m
 
 ## Working with Different Providers
 
-Content Buddy supports multiple AI providers with easy switching:
+SPOT supports multiple AI providers with easy switching:
 
 ```bash
 # Use OpenAI (default)
@@ -118,7 +118,7 @@ GEMINI_MODEL=gemini-1.5-pro
 
 ### Input Files
 
-Content Buddy works with several file types:
+SPOT works with several file types:
 
 **Brief Files (JSON):**
 
@@ -251,7 +251,7 @@ Evaluations measure several key metrics:
 
 ### Style Linting (Offline)
 
-Content Buddy includes a standalone style linter that validates content against your style pack rules without making API calls:
+SPOT includes a standalone style linter that validates content against your style pack rules without making API calls:
 
 ```bash
 # Lint a specific content file
@@ -403,7 +403,7 @@ PROVIDER=anthropic npm run eval:scaffold
 
 ```bash
 # Make sure you're in the project root directory
-cd content-buddy
+cd spot-toolkit
 npm run scaffold -- --help
 ```
 
@@ -469,4 +469,4 @@ LOG_LEVEL=debug npm run health
 7. **Organize Your Files** - Keep input files organized in logical directories
 8. **Check System Health** - Run `npm run health` before important work sessions
 
-This comprehensive guide should help you make the most of Content Buddy's capabilities while avoiding common pitfalls.
+This comprehensive guide should help you make the most of SPOT's capabilities while avoiding common pitfalls.

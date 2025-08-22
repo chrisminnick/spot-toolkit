@@ -1,10 +1,10 @@
 ## 9.1 AI-Assisted Writing and Summarization
 
-The first step in most writing projects is a content brief. A good brief defines the type of content you're trying to produce, your intended audience, and any specific messages or terms that need to be included (or avoided). In Content Buddy, briefs are passed in as JSON and used to generate a structured outline of the piece. This structured outline is called a **scaffold**.
+The first step in most writing projects is a content brief. A good brief defines the type of content you're trying to produce, your intended audience, and any specific messages or terms that need to be included (or avoided). In SPOT, briefs are passed in as JSON and used to generate a structured outline of the piece. This structured outline is called a **scaffold**.
 
 The goal of the scaffold step is to produce a complete plan for the piece before the model starts generating full paragraphs. This improves response speed, reduces drift, and gives your application more control over what’s being created. Later sections can be expanded one at a time—on demand, in parallel, or inside a streaming UI.
 
-Content Buddy supports this scaffold-first approach out of the box. Here's how it works.
+SPOT supports this scaffold-first approach out of the box. Here's how it works.
 
 ---
 
@@ -42,7 +42,7 @@ This separation between **scaffolding** and **expansion** makes it easy to plug 
 
 ### Rewrite and Localize Content
 
-Rewriting is one of the most practical GenAI features to build. It’s useful for adjusting tone, simplifying language, tailoring for different audiences, or localizing content for other regions. Content Buddy exposes a simple API for this:
+Rewriting is one of the most practical GenAI features to build. It’s useful for adjusting tone, simplifying language, tailoring for different audiences, or localizing content for other regions. SPOT exposes a simple API for this:
 
 ```bash
 npm run rewrite -- \
@@ -62,7 +62,7 @@ This is especially useful in marketing, support, and documentation tools that ta
 
 ### Generate Grounded Summaries with Citations
 
-Summarization is another core pattern in content applications—but like rewriting, it’s not one-size-fits-all. That’s why Content Buddy supports different **summarization modes**:
+Summarization is another core pattern in content applications—but like rewriting, it’s not one-size-fits-all. That’s why SPOT supports different **summarization modes**:
 
 - `executive`: a high-level summary of the main ideas
 - `action-only`: filter for decisions and next steps
@@ -112,7 +112,7 @@ Each channel has a tuned tone, word limit, and formatting style based on the out
 
 ### Enforce Brand Voice and Style Governance
 
-To maintain consistency, Content Buddy includes a built-in **style pack** that checks for:
+To maintain consistency, SPOT includes a built-in **style pack** that checks for:
 
 - Required terms
 - Prohibited jargon
@@ -135,7 +135,7 @@ This is especially useful in pre-publish review pipelines or in UI editors that 
 
 If you need structured output for a CMS, publishing pipeline, or API call, you can request JSON-formatted responses from any template.
 
-All prompt templates in Content Buddy return structured data by default. For example, `repurpose_pack@1.0.0.json` outputs structured keys for:
+All prompt templates in SPOT return structured data by default. For example, `repurpose_pack@1.0.0.json` outputs structured keys for:
 
 - `headline`
 - `meta_description`
@@ -148,7 +148,7 @@ Use these outputs directly in automation or apply schema validation post-generat
 
 ### Evaluate Prompt Performance with the Golden Set
 
-Content Buddy includes a full evaluation framework using a “golden set” of briefs, transcripts, and source files. Each test includes expected behavior and is scored against your prompt templates.
+SPOT includes a full evaluation framework using a “golden set” of briefs, transcripts, and source files. Each test includes expected behavior and is scored against your prompt templates.
 
 Run the full suite like this:
 
@@ -170,7 +170,7 @@ Each evaluation computes style violations, reading level compliance, latency, to
 
 ### Test Accessibility and Inclusion
 
-You can also use Content Buddy to generate or test for:
+You can also use SPOT to generate or test for:
 
 - Plain language (via reading level checks)
 - Inclusive language (via must-avoid lists)
@@ -184,7 +184,7 @@ These are all configurable in the style pack, and they’re enforceable through 
 
 ### Legal and IP Guardrails
 
-AI-generated content raises important legal concerns. While Content Buddy doesn’t do legal filtering by default, it provides hooks for:
+AI-generated content raises important legal concerns. While SPOT doesn’t do legal filtering by default, it provides hooks for:
 
 - Labeling outputs as “AI-assisted”
 - Running third-party plagiarism checks
@@ -198,7 +198,7 @@ If you’re deploying in a commercial setting, use the logging and structured ou
 
 ### Integration Patterns
 
-The CLI is great for prototyping, but you’ll likely want to wire these features into your own application. Content Buddy's modular design makes this easy.
+The CLI is great for prototyping, but you’ll likely want to wire these features into your own application. SPOT's modular design makes this easy.
 
 Here are some common integration points:
 
@@ -208,4 +208,4 @@ Here are some common integration points:
 - **Repurpose**: Let users turn blog posts into email blasts in one click
 - **Evaluate**: Run daily tests to verify provider performance or style compliance
 
-The orchestration logic lives in `src/ContentBuddy.js`, and each CLI command is available via Node or through shell execution from your own app.
+The orchestration logic lives in `src/SPOT.js`, and each CLI command is available via Node or through shell execution from your own app.

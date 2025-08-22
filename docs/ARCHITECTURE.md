@@ -1,10 +1,10 @@
-# Content Buddy Architecture
+# SPOT Architecture
 
-A comprehensive overview of Content Buddy's production-ready architecture, design patterns, and implementation details.
+A comprehensive overview of SPOT's production-ready architecture, design patterns, and implementation details.
 
 ## System Overview
 
-Content Buddy is designed as a modular, production-ready system for AI-powered content generation with the following key characteristics:
+SPOT is designed as a modular, production-ready system for AI-powered content generation with the following key characteristics:
 
 - **Zero external dependencies** (except `dotenv` for environment management)
 - **Multi-provider AI support** with automatic failover
@@ -26,8 +26,8 @@ Content Buddy is designed as a modular, production-ready system for AI-powered c
          └───────────────────────┼───────────────────────┘
                                  │
             ┌─────────────────────────────────────────┐
-            │         Content Buddy Core              │
-            │       (src/ContentBuddy.js)             │
+            │         SPOT Core                       │
+            │       (src/SPOT.js)                     │
             └─────────────────────────────────────────┘
                                  │
          ┌───────────────────────┼───────────────────────┐
@@ -47,7 +47,7 @@ Content Buddy is designed as a modular, production-ready system for AI-powered c
 - **`src/cli.js`** - Task-specific command-line interface for direct operations
 - **Purpose:** User interaction, parameter handling, command routing
 
-#### 2. Content Buddy Core (`src/ContentBuddy.js`)
+#### 2. SPOT Core (`src/SPOT.js`)
 
 - **Central orchestrator** for all content generation operations
 - **Template processing** and parameter substitution
@@ -271,13 +271,13 @@ class ProviderFactory {
 ### Directory Structure
 
 ```
-content-buddy/
+spot-toolkit/
 ├── app.js                      # Main CLI entry point
 ├── package.json               # Dependencies and scripts
 ├── .env.template              # Environment template
 │
 ├── src/                       # Core application code
-│   ├── ContentBuddy.js       # Main orchestrator
+│   ├── SPOT.js       # Main orchestrator
 │   ├── cli.js                # Task-specific CLI
 │   │
 │   ├── providers/            # AI provider implementations
@@ -369,7 +369,7 @@ content-buddy/
 
 ### Hierarchical Configuration
 
-Content Buddy uses a layered configuration approach:
+SPOT uses a layered configuration approach:
 
 1. **Default values** (hardcoded in source)
 2. **Config files** (`configs/*.json`)
@@ -429,7 +429,7 @@ Each provider has specific configuration in `configs/providers.json`:
 ### Error Hierarchy
 
 ```
-ContentBuddyError (base)
+SPOTError (base)
 ├── ValidationError
 │   ├── TemplateValidationError
 │   ├── ParameterValidationError
@@ -609,4 +609,4 @@ logger.info('Content generation started', {
 - Success/failure rates
 - Provider reliability scores
 
-This architecture ensures Content Buddy remains maintainable, scalable, and production-ready while providing comprehensive content generation capabilities across multiple AI providers and use cases.
+This architecture ensures SPOT remains maintainable, scalable, and production-ready while providing comprehensive content generation capabilities across multiple AI providers and use cases.

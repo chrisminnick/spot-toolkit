@@ -1,4 +1,4 @@
-# Content Buddy POC
+# Structured Prompt Output Toolkit (SPOT)
 
 An AI-powered content generation tool, focused on reliability, monitoring, and evaluation capabilities. This system demonstrates a complete workflow from content generation to quality assurance using multiple AI providers.
 
@@ -24,8 +24,8 @@ An AI-powered content generation tool, focused on reliability, monitoring, and e
 
 ```bash
 # Clone and navigate to project
-git clone https://github.com/chrisminnick/content-buddy.git
-cd content-buddy
+git clone https://github.com/chrisminnick/spot-toolkit.git
+cd spot-toolkit
 
 # Install dependencies
 npm install
@@ -85,7 +85,7 @@ npm run eval
 ### Core Components
 
 - **[`app.js`](app.js)** - Main application entry point with integrated CLI
-- **[`src/ContentBuddy.js`](src/ContentBuddy.js)** - Core content generation orchestrator
+- **[`src/SPOT.js`](src/SPOT.js)** - Core content generation orchestrator
 - **[`src/utils/`](src/utils/)** - Production utilities (error handling, monitoring, etc.)
 - **[`prompts/`](prompts/)** - Versioned JSON prompt templates
 - **[`golden_set/`](golden_set/)** - Comprehensive test data across 9 categories
@@ -126,7 +126,7 @@ METRICS_ENABLED=true
 
 ## 🤖 Providers
 
-Content Buddy supports multiple AI providers out of the box:
+SPOT supports multiple AI providers out of the box:
 
 - **OpenAI GPT** (`openai`) - Set `OPENAI_API_KEY`
 - **Anthropic Claude** (`anthropic`) - Set `ANTHROPIC_API_KEY`
@@ -205,7 +205,7 @@ npm run lint:content         # Explicit content style linting
 
 ### Style Linting
 
-Content Buddy includes an offline style linter that validates content against your style pack rules:
+SPOT includes an offline style linter that validates content against your style pack rules:
 
 ```bash
 # Lint a specific content file
@@ -406,10 +406,10 @@ METRICS_ENABLED=true
 ## 📁 Project Structure
 
 ```
-content-buddy/
+spot-toolkit/
 ├── app.js                    # Main CLI application
 ├── src/
-│   ├── ContentBuddy.js      # Core orchestrator
+│   ├── SPOT.js               # Core orchestrator
 │   ├── cli.js               # Task-specific CLI
 │   ├── providers/           # AI provider implementations
 │   ├── utils/               # Production utilities

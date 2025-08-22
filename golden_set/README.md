@@ -1,6 +1,6 @@
 # Golden Set - Evaluation Test Data
 
-This directory contains carefully curated test data for evaluating the Content Buddy system across different scenarios, content types, and edge cases.
+This directory contains carefully curated test data for evaluating the SPOT system across different scenarios, content types, and edge cases.
 
 ## Directory Structure
 

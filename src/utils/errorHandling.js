@@ -4,29 +4,29 @@
  * Provides comprehensive error handling, retry logic, and user-friendly error messages
  */
 
-export class ContentBuddyError extends Error {
+export class SPOTError extends Error {
   constructor(message, code, details = {}) {
     super(message);
-    this.name = 'ContentBuddyError';
+    this.name = 'SPOTError';
     this.code = code;
     this.details = details;
     this.timestamp = new Date().toISOString();
   }
 }
 
-export class RetryableError extends ContentBuddyError {
+export class RetryableError extends SPOTError {
   constructor(message, details = {}) {
     super(message, 'RETRYABLE_ERROR', details);
   }
 }
 
-export class ValidationError extends ContentBuddyError {
+export class ValidationError extends SPOTError {
   constructor(message, field, value) {
     super(message, 'VALIDATION_ERROR', { field, value });
   }
 }
 
-export class APIError extends ContentBuddyError {
+export class APIError extends SPOTError {
   constructor(message, provider, statusCode, details = {}) {
     super(message, 'API_ERROR', { provider, statusCode, ...details });
   }
@@ -112,7 +112,7 @@ export class ErrorHandling {
   }
 
   createError(message, code, details = {}) {
-    return new ContentBuddyError(message, code, details);
+    return new SPOTError(message, code, details);
   }
 
   createRetryableError(message, details = {}) {

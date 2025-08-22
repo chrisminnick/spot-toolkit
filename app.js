@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Content Buddy POC Application Entry Point
+ * SPOT Application Entry Point
  * Integrates all production utilities and provides CLI interface
  */
 
@@ -20,7 +20,7 @@ import { Observability } from './src/utils/observability.js';
 import { Monitoring } from './src/utils/monitoring.js';
 import { ProviderManager } from './src/utils/providerManager.js';
 import { TemplateManager } from './src/utils/templateManager.js';
-import { ContentBuddy } from './src/ContentBuddy.js';
+import { SPOT } from './src/SPOT.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -88,7 +88,7 @@ class InteractiveMenu {
   }
 
   async showMainMenu() {
-    console.log('\n📝 Content Buddy - AI-Powered Content Generation');
+    console.log('\n📝 SPOT - Structured Prompt Output Toolkit');
     console.log('==================================================');
     console.log('1. Health Check');
     console.log('2. Generate Content');
@@ -643,7 +643,7 @@ class InteractiveMenu {
   }
 
   async run() {
-    console.log('Welcome to Content Buddy Interactive Menu!');
+    console.log('Welcome to SPOT Interactive Menu!');
 
     while (true) {
       try {
@@ -731,7 +731,7 @@ class Application {
       );
 
       // Initialize main application
-      this.components.contentBuddy = new ContentBuddy({
+      this.components.spot = new SPOT({
         providerManager: this.components.providerManager,
         templateManager: this.components.templateManager,
         config: this.components.config,
@@ -845,7 +845,7 @@ class Application {
         process.exit(1);
       }
 
-      const result = await this.components.contentBuddy.generate({
+      const result = await this.components.spot.generate({
         template: templateName,
         inputFile,
         outputFile,
@@ -864,7 +864,7 @@ class Application {
     try {
       const [templateName] = args;
 
-      const results = await this.components.contentBuddy.evaluate({
+      const results = await this.components.spot.evaluate({
         template: templateName,
       });
 
@@ -896,7 +896,7 @@ class Application {
 
   showHelp() {
     console.log(`
-Content Buddy POC - AI-Powered Content Generation
+SPOT - AI-Powered Content Generation
 
 Usage: node app.js [command] [args]
 
