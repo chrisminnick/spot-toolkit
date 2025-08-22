@@ -1,5 +1,7 @@
 # Structured Prompt Output Toolkit (SPOT)
 
+![SPOT Logo](docs/spot-logo.png)
+
 An AI-powered content generation tool, focused on reliability, monitoring, and evaluation capabilities. This system demonstrates a complete workflow from content generation to quality assurance using multiple AI providers.
 
 ## 🚀 Features
