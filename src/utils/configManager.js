@@ -19,8 +19,12 @@ export class ConfigManager {
     // Load default configuration or perform any initialization
     this.config = {
       observability: {
-        level: process.env.LOG_LEVEL || 'info',
-        format: process.env.LOG_FORMAT || 'json',
+        logger: {
+          level: process.env.LOG_LEVEL || 'info',
+          format: process.env.LOG_FORMAT || 'json',
+          outputs: process.env.LOG_OUTPUTS?.split(',') || ['console'],
+          logFile: process.env.LOG_FILE,
+        },
       },
       errorHandling: {
         exitOnError: false,
