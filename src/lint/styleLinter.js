@@ -1,6 +1,11 @@
 // Basic style linter and readability check.
 export function lintStyle(text, stylePack) {
-  const report = { banned: [], missingRequired: [], readingLevelOk: true, readingLevel: null };
+  const report = {
+    banned: [],
+    missingRequired: [],
+    readingLevelOk: true,
+    readingLevel: null,
+  };
 
   const banned = stylePack.must_avoid || [];
   const required = stylePack.must_use || [];
@@ -14,8 +19,11 @@ export function lintStyle(text, stylePack) {
   }
 
   report.readingLevel = fleschKincaidGrade(text);
-  const [minLvl, maxLvl] = parseReadingBand(stylePack.reading_level || 'Grade 8-10');
-  report.readingLevelOk = report.readingLevel >= minLvl && report.readingLevel <= maxLvl;
+  const [minLvl, maxLvl] = parseReadingBand(
+    stylePack.reading_level || 'Grade 8-10'
+  );
+  report.readingLevelOk =
+    report.readingLevel >= minLvl && report.readingLevel <= maxLvl;
 
   return report;
 }
@@ -30,13 +38,15 @@ export function fleschKincaidGrade(text) {
 }
 
 function countSyllables(text) {
-  const words = (text.toLowerCase().match(/[a-z]+/g) || []);
+  const words = text.toLowerCase().match(/[a-z]+/g) || [];
   let count = 0;
   for (const w of words) {
     // naive syllable count
-    const syl = w.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/,'').replace(/^y/,'');
+    const syl = w
+      .replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '')
+      .replace(/^y/, '');
     const m = syl.match(/[aeiouy]{1,2}/g);
-    count += (m ? m.length : 1);
+    count += m ? m.length : 1;
   }
   return count;
 }
@@ -44,5 +54,5 @@ function countSyllables(text) {
 function parseReadingBand(band) {
   const m = band.match(/(\d+)[^\d]+(\d+)/);
   if (!m) return [0, 20];
-  return [parseInt(m[1],10), parseInt(m[2],10)];
+  return [parseInt(m[1], 10), parseInt(m[2], 10)];
 }
