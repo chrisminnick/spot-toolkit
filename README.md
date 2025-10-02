@@ -8,7 +8,12 @@ An AI-powered content generation tool, focused on reliability, monitoring, and e
 
 SPOT was created by Chris Minnick as a demo project for his book, "A Developer's Guide to Integrating Generative AI into Applications" (Wiley Publishing, 2026, ISBN: 9781394373130).
 
-## 🚀 Features
+## � Available Versions
+
+- **Node.js Version** (this repository) - Full-featured implementation with comprehensive evaluation framework
+- **Python Version** - [spot-python](https://github.com/chrisminnick/spot-python) - Python implementation with the same core functionality
+
+## �🚀 Features
 
 - **Multi-Provider AI Support** - OpenAI, Anthropic, Gemini with automatic failover
 - **Production-Ready Architecture** - Error handling, circuit breakers, health monitoring
