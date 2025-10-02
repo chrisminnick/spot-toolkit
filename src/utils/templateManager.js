@@ -12,10 +12,19 @@ import { ValidationError } from '../utils/errorHandling.js';
 
 export class TemplateManager {
   constructor(templateDir) {
+    if (!templateDir) {
+      throw new Error('templateDir is required for TemplateManager');
+    }
     this.templateDir = templateDir;
     this.templates = new Map();
     this.experiments = new Map();
     this.performance = new Map();
+
+    // Debug logging
+    console.log(
+      'TemplateManager initialized with templateDir:',
+      this.templateDir
+    );
   }
 
   async loadTemplate(templateId) {
@@ -23,7 +32,9 @@ export class TemplateManager {
       return this.templates.get(templateId);
     }
 
+    console.log('Loading template:', templateId, 'from dir:', this.templateDir);
     const templatePath = path.join(this.templateDir, `${templateId}.json`);
+    console.log('Template path:', templatePath);
 
     try {
       const templateData = fs.readFileSync(templatePath, 'utf8');

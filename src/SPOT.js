@@ -32,7 +32,7 @@ export class SPOT {
    */
   async generate(options) {
     const startTime = Date.now();
-    const { template, inputFile, outputFile, provider } = options;
+    const { template, inputFile, outputFile, provider, content } = options;
 
     try {
       this.observability.info('Starting content generation', {
@@ -46,38 +46,47 @@ export class SPOT {
       const templateConfig = await this.templateManager.getTemplate(template);
 
       // Load input data
-      const inputPath = resolve(inputFile);
       let inputData;
 
-      try {
-        const rawData = await readFile(inputPath, 'utf-8');
+      if (content) {
+        // Content provided directly (API usage)
+        inputData = content;
+      } else if (inputFile) {
+        // Content from file (CLI usage)
+        const inputPath = resolve(inputFile);
 
-        // Try to parse as JSON first
-        if (inputFile.endsWith('.json')) {
-          inputData = JSON.parse(rawData);
-        } else {
-          // For non-JSON files, create a wrapper object with common mappings
-          const fileExt = inputFile.split('.').pop();
-          inputData = {
-            content: rawData,
-            file_type: fileExt,
-            file_name: inputPath.split('/').pop(),
+        try {
+          const rawData = await readFile(inputPath, 'utf-8');
 
-            // Common template input mappings
-            markdown: rawData, // for repurpose_pack
-            transcript_text: rawData, // for summarize_grounded
-            text: rawData, // general text input
-            mode: 'executive', // default mode for summarize templates
-            channel_constraints: JSON.stringify({
-              // default channel constraints
-              twitter: { max_length: 280, tone: 'engaging' },
-              linkedin: { max_length: 1300, tone: 'professional' },
-              email: { max_length: 2000, tone: 'friendly' },
-            }),
-          };
+          // Try to parse as JSON first
+          if (inputFile.endsWith('.json')) {
+            inputData = JSON.parse(rawData);
+          } else {
+            // For non-JSON files, create a wrapper object with common mappings
+            const fileExt = inputFile.split('.').pop();
+            inputData = {
+              content: rawData,
+              file_type: fileExt,
+              file_name: inputPath.split('/').pop(),
+
+              // Common template input mappings
+              markdown: rawData, // for repurpose_pack
+              transcript_text: rawData, // for summarize_grounded
+              text: rawData, // general text input
+              mode: 'executive', // default mode for summarize templates
+              channel_constraints: JSON.stringify({
+                // default channel constraints
+                twitter: { max_length: 280, tone: 'engaging' },
+                linkedin: { max_length: 1300, tone: 'professional' },
+                email: { max_length: 2000, tone: 'friendly' },
+              }),
+            };
+          }
+        } catch (error) {
+          throw new Error(`Failed to load input file: ${error.message}`);
         }
-      } catch (error) {
-        throw new Error(`Failed to load input file: ${error.message}`);
+      } else {
+        throw new Error('Either content or inputFile must be provided');
       }
 
       // Validate input against template requirements

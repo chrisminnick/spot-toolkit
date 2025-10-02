@@ -27,10 +27,22 @@
     "expand": "node src/cli.js expand",
     "rewrite": "node src/cli.js rewrite",
     "summarize": "node src/cli.js summarize",
-    "repurpose": "node src/cli.js repurpose"
+    "repurpose": "node src/cli.js repurpose",
+    "api": "node src/api/server.js",
+    "api:dev": "NODE_ENV=development node src/api/server.js",
+    "api:prod": "NODE_ENV=production node src/api/server.js",
+    "api:examples": "node examples/api-client.js examples",
+    "api:workflow": "node examples/api-client.js workflow"
   },
   "dependencies": {
-    "dotenv": "^17.2.1"
+    "dotenv": "^17.2.1",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "node-fetch": "^3.3.2",
+    "swagger-ui-express": "^5.0.0",
+    "swagger-jsdoc": "^6.2.8"
   },
   "devDependencies": {},
   "engines": {

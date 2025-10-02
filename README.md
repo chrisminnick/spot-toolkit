@@ -8,12 +8,12 @@ An AI-powered content generation tool, focused on reliability, monitoring, and e
 
 SPOT was created by Chris Minnick as a demo project for his book, "A Developer's Guide to Integrating Generative AI into Applications" (Wiley Publishing, 2026, ISBN: 9781394373130).
 
-## � Available Versions
+## 🔗 Available Versions
 
 - **Node.js Version** (this repository) - Full-featured implementation with comprehensive evaluation framework
 - **Python Version** - [spot-python](https://github.com/chrisminnick/spot-python) - Python implementation with the same core functionality
 
-## �🚀 Features
+## 🚀 Features
 
 - **Multi-Provider AI Support** - OpenAI, Anthropic, Gemini with automatic failover
 - **Production-Ready Architecture** - Error handling, circuit breakers, health monitoring
@@ -23,6 +23,7 @@ SPOT was created by Chris Minnick as a demo project for his book, "A Developer's
 - **Offline Style Linting** - Check content compliance without API calls
 - **Observability** - Structured logging, metrics, and monitoring
 - **CLI Interface** - Complete command-line interface for all operations
+- **Web API** - RESTful API server for integration with web applications
 
 ## 📋 Requirements
 
@@ -91,12 +92,111 @@ npm run eval:repurpose
 npm run eval
 ```
 
+## 🌐 Web API
+
+SPOT includes a RESTful API server for integration with web applications and services.
+
+### Start the API Server
+
+```bash
+# Start the API server (http://localhost:8000)
+npm run api
+
+# Development mode with auto-reload
+npm run api:dev
+
+# Production mode
+npm run api:prod
+```
+
+### Web Interface
+
+The API includes a beautiful web interface with:
+
+- **📊 Real-time Health Dashboard** - Monitor system health with auto-refresh
+- **📚 Interactive API Documentation** - Swagger UI at `/docs`
+- **🎯 Quick Access Links** - Direct access to all API endpoints
+- **🎨 Modern UI Design** - Clean, responsive interface
+
+**Access the web interface:** http://localhost:8000
+
+### API Endpoints
+
+- `GET /health` - System health check
+- `GET /api/v1/info` - API information and capabilities
+- `GET /api/v1/templates` - List available templates
+- `POST /api/v1/scaffold` - Create content scaffolds
+- `POST /api/v1/expand` - Expand content sections
+- `POST /api/v1/rewrite` - Rewrite content for different audiences
+- `POST /api/v1/summarize` - Summarize content with citations
+- `POST /api/v1/repurpose` - Repurpose content for multiple channels
+- `POST /api/v1/style/check` - Check content style compliance
+
+### Example API Usage
+
+```bash
+# Create a content scaffold
+curl -X POST http://localhost:8000/api/v1/scaffold \
+  -H "Content-Type: application/json" \
+  -d '{
+    "asset_type": "blog post",
+    "topic": "AI applications",
+    "audience": "developers",
+    "tone": "technical",
+    "word_count": 600
+  }'
+```
+
+```javascript
+// JavaScript example
+const response = await fetch('http://localhost:8000/api/v1/scaffold', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    asset_type: 'blog post',
+    topic: 'AI applications',
+    audience: 'developers',
+    tone: 'technical',
+  }),
+});
+const { scaffold } = await response.json();
+```
+
+### API Client Examples
+
+Run the included API client examples:
+
+```bash
+# Basic API examples
+node examples/api-client.js examples
+
+# Complete content workflow
+node examples/api-client.js workflow
+
+# Health check
+node examples/api-client.js health
+```
+
+### Interactive API Documentation
+
+The API server includes **Swagger UI** for interactive documentation:
+
+- **� URL:** http://localhost:8000/docs
+- **✨ Features:**
+  - Try endpoints directly in your browser
+  - View request/response schemas
+  - Generate code examples
+  - Real-time testing without external tools
+
+**📖 Static Documentation:** [docs/API.md](docs/API.md)
+
 ## 🏗️ Architecture
 
 ### Core Components
 
 - **[`app.js`](app.js)** - Main application entry point with integrated CLI
 - **[`src/SPOT.js`](src/SPOT.js)** - Core content generation orchestrator
+- **[`src/api/server.js`](src/api/server.js)** - RESTful API server
 - **[`src/utils/`](src/utils/)** - Production utilities (error handling, monitoring, etc.)
 - **[`prompts/`](prompts/)** - Versioned JSON prompt templates
 - **[`golden_set/`](golden_set/)** - Comprehensive test data across 9 categories
@@ -128,6 +228,11 @@ PROVIDER=openai              # openai/anthropic/gemini/mock
 OPENAI_API_KEY=your_key
 ANTHROPIC_API_KEY=your_key
 GEMINI_API_KEY=your_key
+
+# API Server (optional)
+PORT=8000
+CORS_ORIGINS=http://localhost:3000
+RATE_LIMIT_MAX=100
 
 # Performance & Reliability
 CIRCUIT_BREAKER_THRESHOLD=5
@@ -180,6 +285,16 @@ npm run generate             # Generate content using templates
 npm run health               # Check system health
 npm run validate             # Validate templates and configuration
 npm test                     # Run health check + validation
+```
+
+### Web API Scripts
+
+```bash
+npm run api                  # Start API server
+npm run api:dev              # Start API in development mode
+npm run api:prod             # Start API in production mode
+npm run api:examples         # Run API client examples
+npm run api:workflow         # Run API workflow demo
 ```
 
 ### Content Generation Scripts
@@ -422,6 +537,8 @@ spot-toolkit/
 ├── src/
 │   ├── SPOT.js               # Core orchestrator
 │   ├── cli.js               # Task-specific CLI
+│   ├── api/                 # Web API server
+│   │   └── server.js        # Express.js API server
 │   ├── providers/           # AI provider implementations
 │   ├── utils/               # Production utilities
 │   └── eval/                # Evaluation system
@@ -430,6 +547,7 @@ spot-toolkit/
 ├── configs/                 # Configuration files
 ├── style/                   # Style governance
 ├── docs/                    # Additional documentation
+├── examples/                # API client examples
 └── scripts/                 # Automation scripts
 ```
 
@@ -467,6 +585,14 @@ npm run scaffold -- --asset_type "blog post" --topic "AI"
 # Not: npm run scaffold --asset_type "blog post" --topic "AI"
 ```
 
+**5. API server not starting:**
+
+```bash
+# Check if port is available
+npm run api:dev
+# Or set a different port: PORT=3001 npm run api
+```
+
 ### Getting Help
 
 - Run `npm start` for interactive mode (recommended for beginners)
@@ -477,11 +603,12 @@ npm run scaffold -- --asset_type "blog post" --topic "AI"
 
 ## 🚀 Notes
 
-- **Minimal dependencies** - Only uses `dotenv` for environment variable loading
+- **Minimal dependencies** - Only uses `dotenv` for environment variable loading, plus Express.js ecosystem for API
 - **Provider abstraction** - Easy to add new AI providers or swap between existing ones
 - **Graceful fallback** - Automatically falls back to mock provider if API keys are missing
 - **Versioned prompts** - Prompts are plain JSON with `{placeholders}` compatible with most prompt-management tools
 - **Production ready patterns** - Includes error handling, configuration management, and evaluation framework
+- **Full API support** - Complete REST API for integration with web applications
 
 ## 🛠️ Development
 
